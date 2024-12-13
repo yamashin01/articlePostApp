@@ -1,0 +1,27 @@
+'use client'
+import { signOut } from "@/actions/authFunctions";
+import { IconLogout2 } from "@tabler/icons-react";
+import { useEffect, useActionState } from "react";
+
+const SignOut = () => {
+    const [errState, formAction,isPending ] = useActionState(signOut, '');
+
+    useEffect(()=>{
+        if(!errState)return;
+        alert(errState)
+    },[errState])
+
+    return (
+        <form action={formAction}>
+          <button
+            type="submit"
+            disabled={isPending}
+            className={`p-2 hover:opacity-75 inline-block my-1 ${isPending&&'cursor-not-allowed'}`}
+          >
+            <IconLogout2 size={24}/>
+          </button>
+        </form>
+    )
+}
+
+export default SignOut
