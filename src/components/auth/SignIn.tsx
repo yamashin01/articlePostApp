@@ -1,12 +1,10 @@
-'use client'
 import { useActionState } from "react";
 import AlertError from '../AlertError';
 import { signIn } from '@/actions/authFunctions';
 import MailAuth from './MailAuth';
 
-
 export default function SignIn() {
-    const [state, formAction,isPending] = useActionState(
+    const [state, formAction, isPending] = useActionState(
         signIn,
         {
             message:'',

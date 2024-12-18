@@ -279,11 +279,17 @@
   }
   
   .markdown-body h2 {
-    margin-top: 30px;
+    margin-top: 40px;
     font-weight: 600;
     padding-bottom: .3em;
     font-size: 1.5em;
     border-bottom: 1px solid #d0d7deb3;
+    text-shadow: 0 2px 0 #CCCCCC,
+      0 3px 0 #999,
+      0 3px 0 #999,
+      0 3px 0 #999,
+      0 3px 0 #999,
+      0 3px 0 #000;
   }
   
   .markdown-body h3 {

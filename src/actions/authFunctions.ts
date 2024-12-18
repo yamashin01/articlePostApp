@@ -22,14 +22,11 @@ export const signUp = async (state: SignUpFormState, formData: FormData) => {
         const name = formData.get('name') as string;
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
-        // 入力値を保持
+        // 入力値を保持/反映
         initialState.data.name.value=name;
         initialState.data.email.value=email;
-        initialState.data.password.value=password
+        initialState.data.password.value=password;
         // Required validation
-        if(!name)initialState.data.email.error='Name is required';
-        if(!email)initialState.data.email.error='Email is required';
-        if(!password)initialState.data.password.error='Password is required';
         if(!name || !email || !password){
             initialState.message = 'Bad request error.'
             return initialState;
@@ -39,18 +36,30 @@ export const signUp = async (state: SignUpFormState, formData: FormData) => {
         //■[ validation ]
         //・name
         let result = validationForWord(name);
-        initialState.data.name.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.name.error = result.message;
+        }else if(initialState.data.name.error){
+            initialState.data.name.error = '';
+        }
         //・email
         result = validationForEmail(email);
-        initialState.data.email.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.email.error = result.message;
+        }else if(initialState.data.email.error){
+            initialState.data.email.error = '';
+        }
         //・password
         result = validationForPassword(password);
-        initialState.data.password.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.password.error = result.message;
+        }else if(initialState.data.password.error){
+            initialState.data.password.error = '';
+        }
         //＊
         if(initialState.data.name.error || initialState.data.email.error || initialState.data.password.error){
             initialState.message = 'Bad request error.';
             return initialState;
-        }else{
+        }else if(initialState.message){
             initialState.message = '';
         }
 
@@ -124,21 +133,19 @@ export const signUp = async (state: SignUpFormState, formData: FormData) => {
 export const signIn = async (state: SignInFormState, formData: FormData) => {
     //////////
     //■[ 初期化/イミュータブル ]
-    const initialState: SignInFormState = structuredClone(state)
+    const initialState: SignInFormState = structuredClone(state);
     try{
         //////////
         //■[ formData ]
         // formDataから値を取得
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
-        // 入力値を保持
+        // 入力値を保持/反映
         initialState.data.email.value = email;
         initialState.data.password.value = password;
         // Required validation
-        if (!email) initialState.data.email.error = 'email is required';
-        if (!password) initialState.data.password.error = 'Password is required';
         if (!email || !password) {
-            initialState.message = 'Bad request error.sss';
+            initialState.message = 'Bad request error.';
             return initialState;
         }
 
@@ -146,15 +153,23 @@ export const signIn = async (state: SignInFormState, formData: FormData) => {
         //■[ validation ]
         //・email
         let result = validationForEmail(email);
-        initialState.data.email.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.email.error = result.message;
+        }else if(initialState.data.email.error){
+            initialState.data.email.error = '';
+        }
         //・password
         result = validationForPassword(password);
-        initialState.data.password.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.password.error = result.message;
+        }else if(initialState.data.password.error){
+            initialState.data.password.error = ''
+        }
         //＊
         if (initialState.data.email.error || initialState.data.password.error) {
             initialState.message = 'Bad request error.';
             return initialState;
-        }else{
+        }else if(initialState.message){
             initialState.message = '';
         }
 
@@ -231,8 +246,6 @@ export const mailAuth = async (
     state: MailAuthFormState,
     formData: FormData
 ) => {
-    //////////
-    //■[ 初期化/イミュータブル ]
     const initialState:MailAuthFormState = structuredClone(state);
     let userId:number = 0;
     try{
@@ -241,11 +254,10 @@ export const mailAuth = async (
         // formDataから値を取得
         const email = formData.get('email') as string;
         const authenticationPassword = formData.get('authenticationPassword') as string;
-        // 入力値を保持
+        // 入力値を保持/反映
         initialState.data.email.value = email;
         initialState.data.authenticationPassword.value = authenticationPassword;
         // Required validation
-        if(!authenticationPassword)initialState.data.authenticationPassword.error='AuthenticationPassword is required';
         if(!email || !authenticationPassword){
             initialState.message = 'Bad request error.'
             return initialState;
@@ -255,15 +267,23 @@ export const mailAuth = async (
         //■[ validation ]
         //・email
         let result = validationForEmail(email);
-        initialState.data.email.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.email.error = result.message;
+        }else if(initialState.data.email.error){
+            initialState.data.email.error = '';
+        }
         //・authenticationPassword
         result = validationForAuthenticationPassword(authenticationPassword);
-        initialState.data.authenticationPassword.error = !result.result ? result.message : '';
+        if(!result.result){
+            initialState.data.authenticationPassword.error = result.message;
+        }else if(initialState.data.authenticationPassword.error){
+            initialState.data.authenticationPassword.error = '';
+        }
         //＊
         if(initialState.data.email.error || initialState.data.authenticationPassword.error){
             initialState.message = 'Bad request error.';
             return initialState;
-        }else{
+        }else if(initialState.message){
             initialState.message = ''
         }
 
@@ -286,7 +306,7 @@ export const mailAuth = async (
         const currentTime = new Date();
         const elapsedMilliseconds = currentTime.getTime() - beforeTime.getTime();// beforeTimeから現在の日時までの経過時間(ミリ秒単位)を計算
         const elapsedMinutes = elapsedMilliseconds / (1000 * 60);// 経過時間を分単位に変換
-        if (elapsedMinutes >= 1){
+        if (elapsedMinutes >= 3){
           if(typeValue==='SignUp')await prisma.user.delete({where:{id:userId}});//User新規作成時、3分超過により認証が失敗した場合は、Userを削除
           throw new Error(`More than 3 minutes have passed. Please try again.`);
         }
@@ -340,37 +360,3 @@ export const signOut = async(state: string) => {
     redirect('/auth');
 } 
 
-export async function counterV1(state:number) {
-    state++;//state = state+1;
-    console.log(state)
-    return state;
-}
-export async function counterV2(state:{count:number}) {
-    state.count++;//state.count = state.count+1;
-    console.log(state)
-    return state;
-}
-export async function counterV3(state:{count:number}) {
-    const newState = structuredClone(state);
-    newState.count++;//state.count = state.count+1;
-    console.log(newState)
-    return newState;
-}
-export async function counterV4(
-    state:{
-        count:number
-        text:string
-    },
-    formData: FormData
-) {
-    //初期化
-    const newState = structuredClone(state);
-    //データ取得
-    const text = formData.get('text') as string;
-    //デート反映
-    newState.count = newState.count+1;
-    newState.text = text;
-    //return
-    console.log(newState);
-    return newState;
-}

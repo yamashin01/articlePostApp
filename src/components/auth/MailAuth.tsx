@@ -1,4 +1,3 @@
-'use client'
 import { useActionState } from "react";
 import AlertError from '../AlertError';
 import { mailAuth } from '@/actions/authFunctions';

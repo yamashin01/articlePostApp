@@ -1,14 +1,13 @@
-'use client'
+import { useActionState, useEffect } from "react";
 import { signOut } from "@/actions/authFunctions";
 import { IconLogout2 } from "@tabler/icons-react";
-import { useEffect, useActionState } from "react";
 
 const SignOut = () => {
-    const [errState, formAction,isPending ] = useActionState(signOut, '');
+    const [errState, formAction, isPending ] = useActionState(signOut, '');
 
     useEffect(()=>{
         if(!errState)return;
-        alert(errState)
+        alert(errState);
     },[errState])
 
     return (

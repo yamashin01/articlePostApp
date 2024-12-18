@@ -1,4 +1,3 @@
-'use client'
 import { useActionState } from "react";
 import AlertError from '../AlertError';
 import { signUp } from '@/actions/authFunctions';

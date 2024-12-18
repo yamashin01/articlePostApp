@@ -1,24 +1,23 @@
 "use client";
-import { counterV1, counterV2, counterV3, counterV4 } from "@/actions/authFunctions";
+import { counterV1, counterV2, counterV3, counterV4 } from "@/actions/counterFunctions";
 import { useActionState } from "react";
 
-
 export default function ServerActionsPracticePage() {
-    const [stateV1, formActionV1] = useActionState(counterV1, 0);
-    const [stateV2, formActionV2] = useActionState(counterV2, {count:0});
-    const [stateV3, formActionV3] = useActionState(counterV3, {count:0});
-    const [stateV4, formActionV4] = useActionState(
+    const [stateV1, formActionV1,isPending] = useActionState(counterV1, 0);
+    const [stateV2, formActionV2,isPendingV2] = useActionState(counterV2, {count:0});
+    const [stateV3, formActionV3,isPendingV3] = useActionState(counterV3, {count:0});
+    const [stateV4, formActionV4,isPendingV4] = useActionState(
         counterV4,
         {
             count:0,
-            text:''
+            text:'',
         }
     );
 
     return (<>
         <form action={formActionV1} className="my-3 space-x-3">
             V1:Count: {stateV1}
-            <button className="bg-slate-300">Increment</button>
+            <button type="submit" disabled={isPending} className="bg-slate-300">Increment</button>
             <div className="my-3">
                 <input
                     type='text'
@@ -30,7 +29,7 @@ export default function ServerActionsPracticePage() {
         <hr/>
         <form action={formActionV2} className="my-3 space-x-3">
             V2:Count: {stateV2.count}
-            <button className="bg-slate-300">Increment</button>
+            <button disabled={isPendingV2} className="bg-slate-300">Increment</button>
             <div className="my-3">
                 <input
                     type='text'
@@ -42,7 +41,7 @@ export default function ServerActionsPracticePage() {
         <hr/>
         <form action={formActionV3} className="my-3 space-x-3">
             V3:Count: {stateV3.count}
-            <button className="bg-slate-300">Increment</button>
+            <button disabled={isPendingV3} className="bg-slate-300">Increment</button>
             <div className="my-3">
                 <input
                     type='text'
@@ -54,7 +53,12 @@ export default function ServerActionsPracticePage() {
         <hr/>
         <form action={formActionV4} className="my-3 space-x-3">
             V4:Count: {stateV4.count}
-            <button className="bg-slate-300">Increment</button>
+            <button
+                disabled={isPendingV4} 
+                className={`bg-slate-300 ${isPendingV4 && 'cursor-not-allowed'}`}
+            >
+                Increment
+            </button>
             <div className="my-3">
                 <input
                     name='text'

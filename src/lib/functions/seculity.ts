@@ -24,7 +24,7 @@ export const jwtAccessTokenEncode = async({
         const jwtKeyUint8Array = new TextEncoder().encode(jwtKey);// ← 関数の外で処理するよう修正した方が良いです
         const token = await new jose.SignJWT(objectData)
             .setProtectedHeader({ alg: 'HS256' })
-            .setExpirationTime('1h')
+            .setExpirationTime('2h')
             .sign(jwtKeyUint8Array);
         return {
             result:true,
