@@ -210,7 +210,10 @@ const EditedPostCc = ({
                 <div className='flex items-center space-x-3'>
                     <button
                         disabled={loadingFlag}
-                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loadingFlag&&'cursor-not-allowed'}`}
+                        className={`
+                            bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline 
+                            ${loadingFlag&&'cursor-not-allowed'}
+                        `}
                         onClick={handleUpdate}
                     >
                         <span className="flex items-center">
@@ -219,7 +222,10 @@ const EditedPostCc = ({
                     </button>
                     <button
                         disabled={loadingFlag}
-                        className={`bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loadingFlag&&'cursor-not-allowed'}`}
+                        className={`
+                            bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline 
+                            ${loadingFlag&&'cursor-not-allowed'}
+                        `}
                         onClick={handleDelete}
                     >
                         <span className="flex items-center">

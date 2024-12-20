@@ -40,17 +40,17 @@ const PostList = async({
       //□offset更新：-1
       params.set('page', String(page-1));
       url.search = params.toString(); //「url.search = ?page=2&sort='desc」「params.toString() = ?page=1&sort='desc」
-      prevPageUrl = url.toString();//「url.toString() = http://localhost:3000/user/userId?page=1&sort='desc」
+      prevPageUrl = url.toString() + "#postList";//「url.toString() = http://localhost:3000/user/userId?page=1&sort='desc」
   }
   if(data.length>fetchCount){
       //□offset更新：+1
       params.set('page', String(page+1));
       url.search = params.toString();
-      nextPageUrl = url.toString();
+      nextPageUrl = url.toString() + "#postList";
   }
 
   return (<>
-    <div className="p-1 mt-5 sm:p-5 sm:mt-0">
+    <div className="p-1 mt-5 sm:p-5 sm:mt-0" id="postList">
       <div className="sm:flex sm:flex-wrap sm:items-stretch container mx-auto">
         {data.slice(0,fetchCount).map( (post) => <Post post={post} path={path} key={post.id}/> )}
       </div>
