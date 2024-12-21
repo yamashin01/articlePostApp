@@ -94,10 +94,11 @@ export async function PUT(request: NextRequest) {
         const thumbnail = await prisma.thumbnail.findUnique({
             where:{
                 id:thumbnailIdNum,
-                userId,
+                //userId,
             }
         });
         if(!thumbnail)return NextResponse.json( {message:`Bad request. The thumbnailId is not correct.`}, {status:400});
+        if(thumbnail.userId != userId)return NextResponse.json( {message:'Authentication failed.'}, {status:401});
                 
         //////////
         //■[ 更新対象postの存在＆userIdの確認 ]

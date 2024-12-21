@@ -4,15 +4,17 @@ import { entityToDangerousChar } from "@/lib/functions/myValidation";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
 const EditedPostSc = async({
-    postId
+    postId,
+    userId,
 }:{
     postId:number
+    userId:number
 }) => {
     //await new Promise( (resolve) => setTimeout(resolve,5000) )
 
     //////////
     //■[ データ取得 ]
-    const {result,message,data} = await getPostWithThumbnail(postId);
+    const {result,message,data} = await getPostWithThumbnail(postId,userId);
     if(!result || !data)throw new Error(message);
     const content = entityToDangerousChar(data.content as string);
 

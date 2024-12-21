@@ -81,7 +81,7 @@ export const getPostWithThumbnailList = cache(async({
 });
 
 //cache：Request Memoization！重複排除！
-export const getPostWithThumbnail = cache(async(postId:number):Promise<{
+export const getPostWithThumbnail = cache(async(postId:number,userId?:number):Promise<{
     result:boolean
     message:string
     data:PostWithThumbnail|null
@@ -96,6 +96,7 @@ export const getPostWithThumbnail = cache(async(postId:number):Promise<{
             }
         });
         if(!post)throw new Error('404 not found');
+        if(userId && post.userId!==userId)throw new Error('401 Unauthorized');//修正しました🙇
         return {
             result:true,
             message:'success',
