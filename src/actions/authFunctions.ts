@@ -4,6 +4,7 @@ import { generateRandomNumber6, saveAccessTokenInCookies } from "@/lib/functions
 import { sendMail } from "@/lib/nodemailer";
 import prisma from "@/lib/prisma";
 import { SignUpFormState, SignInFormState, MailAuthFormState} from "@/lib/types";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import * as bcrypt from 'bcrypt';
 import { cookies } from "next/headers";
 import { redirect } from 'next/navigation';
@@ -121,9 +122,15 @@ export const signUp = async (state: SignUpFormState, formData: FormData) => {
         return initialState;
         
     }catch(err){
+        let errMessage = `Internal Server Error.`;
+        if (err instanceof PrismaClientKnownRequestError && err.code==='P2002') {// Unique制約違反のエラー
+            errMessage = 'Email address is taken. Please try another one.';
+        }else if(err instanceof Error){
+            errMessage = err.message
+        }
         //////////
         //■[ return(処理失敗) ]
-        initialState.message = err instanceof Error ?  err.message : `Internal Server Error.`;
+        initialState.message = errMessage;
         return initialState;
     }
 };
