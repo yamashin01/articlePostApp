@@ -16,6 +16,14 @@ export const signUp = async (state: SignUpFormState, formData: FormData) => {
     //////////
     //■[ 初期化/イミュータブル ]
     const initialState:SignUpFormState = structuredClone(state);
+    // const initialState:SignUpFormState = {
+    //     message:'',
+    //     data:{
+    //         name:{value:'',error:''},
+    //         email:{value:'',error:''},
+    //         password:{value:'',error:''},
+    //     },
+    // }
     try{
         //////////
         //■[ formData ]
