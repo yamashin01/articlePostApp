@@ -16,7 +16,7 @@ const UserIcon = () => {
     const updateUser = useStore((state) => state.updateUser);
     const resetUser = useStore((state) => state.resetUser);
 
-    useEffect(()=>{
+    useEffect(()=>{//useEffectは基本的に非推奨。今回は、クライアントサイドでのログインユーザの管理＆エラー時の処理を細やかに分岐する必要があったので使用
         const fetchData = async () =>{
             try{
                 const {data} = await axios.get<AuthUser>(`${apiUrl}/auth`);

@@ -122,7 +122,7 @@ const EditedPostCc = ({
         try{
             await axios.delete<{message:string}>(`${apiUrl}/user/post?postId=${post.id}`);
             router.push(`/user/${user.id}`);
-            router.refresh();//この記述＆この順序でないと、削除が即座に反映されない場合が
+            router.refresh();//Router Cacheが残っている場合、この記述＆この順序でないと、削除が即座に反映されない場合が
             //console.log('router.push～router.refresh');
         }catch(err){
             let message = 'Something went wrong. Please try again.';

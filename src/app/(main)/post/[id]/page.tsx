@@ -15,22 +15,26 @@ const mediaPath = process.env.NEXT_PUBLIC_MEDIA_PATH as string;
 //   }));
 // }
 
+//・「import { unstable_cache } from 'next/cache'」を用いれば、
+//　fetchを用いなくとも、ORMまたはデータベースでのデータキャッシングを制御可能！！
+//・最新！「"use cache"」でのキャッシュ制御について：https://zenn.dev/sc30gsw/articles/22fa89a432de90
+
 const getOnePost = async(postId:number):Promise<PostWithThumbnail> => {
-  const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/post/${postId}`,
-      {
-          //cache: 'force-cache'
-          cache: 'no-store'
-      }
-  );
-  if(res.status===404)notFound();
-  if (!res.ok) throw new Error('Failed to fetch data in server')// HTTPステータスコードが400以上の場合、エラーとして処理
-  const postData:PostWithThumbnail = await res.json();
-  return postData;
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/post/${postId}`,
+        {
+            //cache: 'force-cache'
+            cache: 'no-store'
+        }
+    );
+    if(res.status===404)notFound();
+    if (!res.ok) throw new Error('Failed to fetch data in server')// HTTPステータスコードが400以上の場合、エラーとして処理
+    const postData:PostWithThumbnail = await res.json();
+    return postData;
 }
 
 // const getOnePost = async(postId:number):Promise<PostWithThumbnail> => {
-//   //■[ Next-V-14.2.14ではデフォルトがSSG。generateStaticParamsがあれば、SSGが適用される ]
+//   //■[ generateStaticParamsがあれば、unstable_cacheを用いなくとも、SSGが適用される ]
 //   const {result,message,data} = await getPostWithThumbnail(Number(postId));
 //   if(message==='404 not found.')notFound();
 //   if(!result || !data)throw new Error(message);
