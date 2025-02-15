@@ -15,8 +15,6 @@ const mediaPath = process.env.NEXT_PUBLIC_MEDIA_PATH as string;
 //   }));
 // }
 
-//・「import { unstable_cache } from 'next/cache'」を用いれば、
-//　fetchを用いなくとも、ORMまたはデータベースでのデータキャッシングを制御可能！！
 //・最新！「"use cache"」でのキャッシュ制御について：https://zenn.dev/sc30gsw/articles/22fa89a432de90
 
 const getOnePost = async(postId:number):Promise<PostWithThumbnail> => {
