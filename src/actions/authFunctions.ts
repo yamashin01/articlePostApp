@@ -3,7 +3,7 @@ import { validationForAuthenticationPassword, validationForPassword, validationF
 import { generateRandomNumber6, saveAccessTokenInCookies } from "@/lib/functions/seculity";
 import { sendMail } from "@/lib/nodemailer";
 import prisma from "@/lib/prisma";
-import { SignUpFormState, SignInFormState, MailAuthFormState} from "@/lib/types";
+import { SignUpFormState, MailAuthFormState} from "@/lib/types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import * as bcrypt from 'bcrypt';
 import { cookies } from "next/headers";
@@ -145,48 +145,29 @@ export const signUp = async (state: SignUpFormState, formData: FormData) => {
 
 
 //ログイン
-export const signIn = async (state: SignInFormState, formData: FormData) => {
-    //////////
-    //■[ 初期化/イミュータブル ]
-    const initialState: SignInFormState = structuredClone(state);
+export const signIn = async (
+    state: {
+        success:boolean 
+        errMsg:string
+    },
+    formData: FormData
+ ) => {
     try{
         //////////
         //■[ formData ]
         // formDataから値を取得
         const email = formData.get('email') as string;
         const password = formData.get('password') as string;
-        // 入力値を保持/反映
-        initialState.data.email.value = email;
-        initialState.data.password.value = password;
         // Required validation
-        if (!email || !password) {
-            initialState.message = 'Bad request error.';
-            return initialState;
-        }
+        if(!email || !password)return {...state, errMsg:'Bad request error.'};
 
         //////////
-        //■[ validation ]
-        //・email
+        //■[ validation ]:正規ルート外からのリクエストに備えての保険
         let result = validationForEmail(email);
-        if(!result.result){
-            initialState.data.email.error = result.message;
-        }else if(initialState.data.email.error){
-            initialState.data.email.error = '';
-        }
+        if(!result.result) return {...state, errMsg:'Bad request error.'};
         //・password
         result = validationForPassword(password);
-        if(!result.result){
-            initialState.data.password.error = result.message;
-        }else if(initialState.data.password.error){
-            initialState.data.password.error = ''
-        }
-        //＊
-        if (initialState.data.email.error || initialState.data.password.error) {
-            initialState.message = 'Bad request error.';
-            return initialState;
-        }else if(initialState.message){
-            initialState.message = '';
-        }
+        if(!result.result) return {...state, errMsg:'Bad request error.'};
 
         //////////
         //■[ 認証:メールアドレス,パスワード ]
@@ -197,60 +178,63 @@ export const signIn = async (state: SignInFormState, formData: FormData) => {
                 verifiedEmail:true
             }
         });
-        if(!checkUser){
-            initialState.data.email.error = emailOrPasswordErr;
-            initialState.data.password.error = emailOrPasswordErr;
-            initialState.message = emailOrPasswordErr;
-            return initialState
-        }
+        if(!checkUser)return {...state, errMsg:emailOrPasswordErr}; 
         //・パスワード
         try{
             const result = await bcrypt.compare(password, checkUser.hashedPassword);
-            if(!result){
-                initialState.data.email.error = emailOrPasswordErr;
-                initialState.data.password.error = emailOrPasswordErr;
-                initialState.message = emailOrPasswordErr;
-                return initialState
-            }
+            if(!result)return {...state, errMsg:emailOrPasswordErr}
         }catch(err){
             throw err;
         }
 
         //////////
-        //■[ SMS認証 ]◆
-        //・6桁の乱数を生成
+        //■[ 6桁の認証パスワードを生成 ]
         const randomNumber6 = generateRandomNumber6();
-        //・User の authenticationPassword & updatedAt を更新
-        await prisma.user.update({
-            where:{id:checkUser.id},
-            data:{
-                authenticationPassword:randomNumber6,
-                updatedAt: new Date()
-            }
+
+        //////////
+        //■[ transaction ]
+        await prisma.$transaction(async (prismaT) => {
+            //////////
+            //■[ SMS認証 ]
+            //・User の authenticationPassword & updatedAt を更新
+            await prismaT.user.update({
+                where:{id:checkUser.id},
+                data:{
+                    authenticationPassword:randomNumber6,
+                    updatedAt: new Date()
+                }
+            });
+            //・認証メール送信
+            const sendMailResult = await sendMail({
+                toEmail: email,
+                subject: '2段階認証パスワード',
+                text: '以下のパスワードを入力し、メールアドレス認証を完了させて下さい。有効期限は3分です。',
+                html:`
+                    <p>以下のパスワードを入力し、メールアドレス認証を完了させて下さい。有効期限は3分です。</p>
+                    <br/>
+                    <p>${randomNumber6}</p>
+                `
+            });
+            if(!sendMailResult.result)throw new Error(sendMailResult.message);
+        },
+        {
+            maxWait: 10000, // default: 2000
+            timeout: 25000, // default: 5000
+        }).catch((err)=>{
+            throw err;
         });
-        //・認証メール送信
-        const sendMailResult = await sendMail({
-            toEmail: email,
-            subject: '2段階認証パスワード',
-            text: '以下のパスワードを入力し、メールアドレス認証を完了させて下さい。有効期限は3分です。',
-            html:`
-                <p>以下のパスワードを入力し、メールアドレス認証を完了させて下さい。有効期限は3分です。</p>
-                <br/>
-                <p>${randomNumber6}</p>
-            `
-        });
-        if(!sendMailResult.result)throw new Error(sendMailResult.message);
-        
+
         //////////
         //■[ return(処理成功) ]
-        initialState.message='success';
-        return initialState;
+        return {success:true, errMsg:''};
         
     }catch(err){
         //////////
         //■[ return(処理失敗) ]
-        initialState.message = err instanceof Error ?  err.message : `Internal Server Error.`;
-        return initialState;
+        return {
+            ...state, 
+            errMsg:err instanceof Error ?  err.message : `Internal Server Error.`
+        };
     }
 };
 

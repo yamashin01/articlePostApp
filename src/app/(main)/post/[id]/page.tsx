@@ -41,14 +41,14 @@ const getOnePost = async(postId:number):Promise<PostWithThumbnail> => {
 
 const PostIdPage = async (
     props:{
-      params: Promise<{id:number}>
+      params: Promise<{id:string}>
     }
 ) => {
     const params = await props.params;
     //////////
     //■[ postId ]
-    const postId = params.id as number;
-    if(!postId)notFound();
+    const postId = Number(params.id);
+    if(!postId || isNaN(postId))notFound();
 
     //////////
     //■[ data fetch ]
@@ -57,11 +57,11 @@ const PostIdPage = async (
     return <PostSingle post={post}/>
 }
 
-export async function generateMetadata(props:{params: Promise<{id:number}>}): Promise<Metadata> {
+export async function generateMetadata(props:{params: Promise<{id:string}>}): Promise<Metadata> {
     const params = await props.params;
     //////////
     //■[ postId ]
-    const postId = params.id as number;
+    const postId = Number(params.id);
     //////////
     //■[ data fetch：SSG ]
     const post = await getOnePost(postId);
